@@ -4,5 +4,14 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/guava-23.0.jar" sourcepath="lib/guava-23.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/Jack/git/Spark/lib/guava-23.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/annotations-13.0.jar"/>
+	<classpathentry kind="lib" path="lib/cache-api-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-core-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-shmem-1.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
