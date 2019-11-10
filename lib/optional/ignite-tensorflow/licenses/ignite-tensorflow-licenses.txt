@@ -1,0 +1,50 @@
+// ------------------------------------------------------------------
+// List of ignite-tensorflow module's dependencies provided as a part of this distribution.
+// ------------------------------------------------------------------
+
+==============================================================================
+For picocli - a mighty tiny Command Line Interface (http://picocli.info) info.picocli:picocli:jar:3.3.0
+==============================================================================
+This product bundles picocli - a mighty tiny Command Line Interface which is available under the following:
+The Apache Software License, version 2.0. For details, see http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For Logback Classic Module (http://logback.qos.ch/logback-classic) ch.qos.logback:logback-classic:jar:1.2.3
+==============================================================================
+This product bundles Logback Classic Module which is available under the following:
+Eclipse Public License - v 1.0. For details, see http://www.eclipse.org/legal/epl-v10.html.
+GNU Lesser General Public License. For details, see http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+==============================================================================
+For Logback Core Module (http://logback.qos.ch/logback-core) ch.qos.logback:logback-core:jar:1.2.3
+==============================================================================
+This product bundles Logback Core Module which is available under the following:
+Eclipse Public License - v 1.0. For details, see http://www.eclipse.org/legal/epl-v10.html.
+GNU Lesser General Public License. For details, see http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+==============================================================================
+For ignite-core (http://ignite.apache.org) org.apache.ignite:ignite-core:jar:2.7.6
+==============================================================================
+This product bundles ignite-core which is available under the following:
+The Apache Software License, Version 2.0. For details, see http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For ignite-slf4j (http://ignite.apache.org) org.apache.ignite:ignite-slf4j:jar:2.7.6
+==============================================================================
+This product bundles ignite-slf4j which is available under the following:
+The Apache Software License, Version 2.0. For details, see http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For ignite-spring (http://ignite.apache.org) org.apache.ignite:ignite-spring:jar:2.7.6
+==============================================================================
+This product bundles ignite-spring which is available under the following:
+The Apache Software License, Version 2.0. For details, see http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For Apache Commons IO (http://commons.apache.org/proper/commons-io/) commons-io:commons-io:jar:2.6
+==============================================================================
+This product bundles Apache Commons IO which is available under the following:
+Apache License, Version 2.0. For details, see https://www.apache.org/licenses/LICENSE-2.0.txt.
+
+
+

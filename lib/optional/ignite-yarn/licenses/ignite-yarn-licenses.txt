@@ -1,0 +1,36 @@
+// ------------------------------------------------------------------
+// List of ignite-yarn module's dependencies provided as a part of this distribution.
+// ------------------------------------------------------------------
+
+==============================================================================
+For Apache Hadoop Common  org.apache.hadoop:hadoop-common:jar:2.7.7
+==============================================================================
+This product bundles Apache Hadoop Common which is available under the following:
+Apache License, Version 2.0. For details, see http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For hadoop-yarn-client  org.apache.hadoop:hadoop-yarn-client:jar:2.7.7
+==============================================================================
+This product bundles hadoop-yarn-client which is available under the following:
+Apache License, Version 2.0. For details, see http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For Apache Commons Collections (http://commons.apache.org/collections/) commons-collections:commons-collections:jar:3.2.2
+==============================================================================
+This product bundles Apache Commons Collections which is available under the following:
+Apache License, Version 2.0. For details, see http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For Apache Commons BeanUtils (https://commons.apache.org/proper/commons-beanutils/) commons-beanutils:commons-beanutils:jar:1.9.3
+==============================================================================
+This product bundles Apache Commons BeanUtils which is available under the following:
+Apache License, Version 2.0. For details, see https://www.apache.org/licenses/LICENSE-2.0.txt.
+
+==============================================================================
+For Apache Commons Codec (http://commons.apache.org/proper/commons-codec/) commons-codec:commons-codec:jar:1.11
+==============================================================================
+This product bundles Apache Commons Codec which is available under the following:
+Apache License, Version 2.0. For details, see https://www.apache.org/licenses/LICENSE-2.0.txt.
+
+
+

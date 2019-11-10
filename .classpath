@@ -13,5 +13,20 @@
 	<classpathentry kind="lib" path="lib/cache-api-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/ignite-core-2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/ignite-shmem-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-indexing/commons-codec-1.11.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-indexing/h2-1.4.197.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-indexing/ignite-indexing-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-indexing/lucene-analyzers-common-7.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-indexing/lucene-core-7.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-indexing/lucene-queryparser-7.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/ignite-spring-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/spring-aop-4.3.18.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/spring-beans-4.3.18.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/spring-context-4.3.18.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/spring-core-4.3.18.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/spring-expression-4.3.18.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/spring-jdbc-4.3.18.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/ignite-spring/spring-tx-4.3.18.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
