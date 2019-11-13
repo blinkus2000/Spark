@@ -6,7 +6,7 @@ public class SourceData<DataType> {
 	final int indexWithinBlock;
 	final DataType data;
 	final int dataCountPerBlock;
-
+	int truncate = 0;
 	public SourceData(int dataCountPerBlock, long sourceIndex, DataType data) {
 		super();
 		this.sourceIndex = sourceIndex;
@@ -22,6 +22,14 @@ public class SourceData<DataType> {
 
 	public DataType getData() {
 		return data;
+	}
+
+	public int getTruncate() {
+		return truncate;
+	}
+
+	public void setTruncate(int truncate) {
+		this.truncate = truncate;
 	}
 	
 
