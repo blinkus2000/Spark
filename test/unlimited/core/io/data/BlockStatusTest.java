@@ -57,6 +57,35 @@ public class BlockStatusTest {
 			expectedCount++;
 		}
 		assertTrue(underTest.isComplete());
+		underTest = new BlockStatus(1234);
+		for(int i = 0 ; i < 1234 ; i ++) {
+			if((i+1)%2==0) {
+				underTest.addIndex(i);
+			}
+		}
+		assertFalse(underTest.isComplete());
+		long[] longMap = underTest.getLongMap();
+		for(int i = 0 ; i < 1234 ; i ++) {
+			if((i+1)%2==0) {
+				assertTrue(BitWise.testBit(longMap, i));
+			}
+		}
+	}
+	@Test
+	public void testTruncate() {
+		BlockStatus underTest = new BlockStatus(10);
+		for(int i = 0 ; i < 5 ; i ++) {
+			long[] longMap = underTest.getLongMap();
+			
+			for(int j = 0 ; j < i ; j++) {
+				assertFalse(BitWise.testBit(longMap, j));
+			}
+			assertFalse(underTest.isComplete());
+			underTest.addIndex(i);
+		}
+		assertFalse(underTest.isComplete());
+		underTest.truncate(5);
+		assertTrue(underTest.isComplete());
 	}
 
 }

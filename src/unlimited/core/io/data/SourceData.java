@@ -1,6 +1,12 @@
 package unlimited.core.io.data;
 
 public class SourceData<DataType> {
+	@Override
+	public String toString() {
+		return "SourceData [sourceIndex=" + sourceIndex + ", indexOfBlock=" + indexOfBlock + ", indexWithinBlock="
+				+ indexWithinBlock + ", data=" + data + "]";
+	}
+
 	final long sourceIndex;
 	final long indexOfBlock;
 	final int indexWithinBlock;
@@ -28,8 +34,8 @@ public class SourceData<DataType> {
 		return truncate;
 	}
 
-	public void setTruncate(int truncate) {
-		this.truncate = truncate;
+	public void truncateHere() {
+		this.truncate = (dataCountPerBlock - indexWithinBlock);
 	}
 	
 

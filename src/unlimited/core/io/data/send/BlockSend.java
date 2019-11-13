@@ -23,22 +23,25 @@ public class BlockSend <DataType,Out extends DataConsumer<SourceData<DataType>>>
 
 	@Override
 	public Results call() throws Exception {
+		Thread.currentThread().setName("SENDER ID: "+this.blockIndex);
 		try {
-			while(send());
+			while(sending());
 		} catch (Exception e) {
 			return new Results(e);
 		}
 		return new Results(null);
 	}
-	public boolean send() {
+	public boolean sending() {
 		BlockStatus currentStatus = status.get();
 		if(currentStatus.isComplete()) {
-			return true;
+			return false;
 		}
 		for(int i = currentStatus.getNextEmptyEntry(); i < this.dataCount ; i ++) {
-			allData.computeIfPresent(i, this::send);
+			if (!currentStatus.hasIndex(i)) {
+				allData.computeIfPresent(i, this::send);
+			}
 		}
-		return false;
+		return true;
 	}
 	private SourceData<DataType> send(int index, SourceData<DataType> data) {
 		try {

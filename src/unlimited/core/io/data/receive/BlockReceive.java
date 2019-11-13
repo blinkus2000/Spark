@@ -22,6 +22,7 @@ public class BlockReceive<DataType,Out extends DataConsumer<SourceData<DataType>
 
 	@Override
 	public Results call() throws Exception {
+		Thread.currentThread().setName("RECEIVER ID: "+this.blockIndex);
 		while(!status.isComplete()) {
 			try {
 				receive();
@@ -32,13 +33,24 @@ public class BlockReceive<DataType,Out extends DataConsumer<SourceData<DataType>
 		return new Results(null);
 	}
 	public void receive() throws IOException {
+		SourceData<DataType> incoming = in.produce();
 		synchronized (status) {
-			SourceData<DataType> incoming = in.produce();
 			int index = incoming.getIndex();
 			if(!status.hasIndex(index)) {
+				final int truncate = incoming.getTruncate();
+				if(truncate>0) {
+					status.truncate(truncate);
+				}
 				this.out.consume(index, incoming);
 				status.addIndex(index);
 			}
 		}		
 	}
+
+	public  BlockStatus getStatus() {
+		synchronized (status) {
+			return status.clone();
+		}
+	}
+	
 }

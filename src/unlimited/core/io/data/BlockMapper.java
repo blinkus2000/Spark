@@ -10,7 +10,7 @@ public class BlockMapper {
 	public static class BlockBuilder{
 		public final int dataCount;
 		public final long blockIndex;
-		private BlockBuilder(int dataCount, long blockIndex) {
+		BlockBuilder(int dataCount, long blockIndex) {
 			super();
 			this.dataCount = dataCount;
 			this.blockIndex = blockIndex;

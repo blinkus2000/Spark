@@ -7,6 +7,7 @@ public class BlockStatus implements Cloneable {
 	final int dataCount;
 	BitSet received;
 	int currentFull = 0;
+	int truncate = 0;
 	private boolean changed = false;
 	public BlockStatus(int dataCount) {
 		this.dataCount = dataCount;
@@ -17,6 +18,7 @@ public class BlockStatus implements Cloneable {
 			this.dataCount = status.dataCount;
 			this.currentFull = status.currentFull;
 			this.received = (BitSet) status.received.clone();
+			this.truncate = status.truncate;
 		}
 	}
 	public synchronized void addIndex(int index) {
@@ -31,16 +33,15 @@ public class BlockStatus implements Cloneable {
 		if(nextClearBit>currentFull) {
 			currentFull = nextClearBit-1;
 		}
-		return nextClearBit;
+		return Math.min(nextClearBit,(dataCount - truncate));
 	}
 	public synchronized long[] getLongMap() {
 		int firstEmpty = getNextEmptyEntry();
-		int bitsToCheck = Math.min(64, (dataCount-firstEmpty));
-		BitSet bitSet = this.received.get(firstEmpty, firstEmpty+bitsToCheck);
+		BitSet bitSet = this.received.get(firstEmpty, dataCount);
 		return bitSet.toLongArray();
 	}
 	@Override
-	protected BlockStatus clone(){
+	public BlockStatus clone(){
 		return new BlockStatus(this);
 	}
 	public synchronized void updateAndReset(Consumer<BlockStatus> updater) {
@@ -50,7 +51,12 @@ public class BlockStatus implements Cloneable {
 		}		
 	}
 	public synchronized boolean isComplete() {
-		return this.received.nextClearBit(currentFull) == dataCount;
+		final int nextClearBit = this.received.nextClearBit(currentFull);
+		return nextClearBit >= (dataCount - truncate);
+	}
+	public synchronized void truncate(int truncate) {
+		this.truncate = truncate;
+		this.changed = true;
 	}
 	
 }
