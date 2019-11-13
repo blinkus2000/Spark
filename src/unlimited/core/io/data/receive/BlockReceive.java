@@ -1,19 +1,44 @@
 package unlimited.core.io.data.receive;
 
 
+import java.io.IOException;
+
 import unlimited.core.io.data.Block;
+import unlimited.core.io.data.BlockMapper;
+import unlimited.core.io.data.BlockStatus;
 import unlimited.core.io.data.DataConsumer;
+import unlimited.core.io.data.DataProducer;
+import unlimited.core.io.data.Results;
+import unlimited.core.io.data.SourceData;
 
-public class BlockReceive<DataType,In extends DataConsumer<DataType>,Out extends DataConsumer<DataType>> extends Block<DataType,In,Out,BlockReceiveResults> {
-
-	public BlockReceive(long numOfPackets, long blockIndex, In in, Out out) {
-		super(numOfPackets, blockIndex, in, out);
+public class BlockReceive<DataType,Out extends DataConsumer<SourceData<DataType>>> extends Block<DataType,Out> {
+	final BlockStatus status;
+	final DataProducer<DataType> in;
+	public BlockReceive(BlockMapper.BlockBuilder builder, DataProducer<DataType> in, Out out) {
+		super(builder, out);
+		status = new BlockStatus(dataCount);
+		this.in = in;
 	}
 
 	@Override
-	public BlockReceiveResults call() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public Results call() throws Exception {
+		while(!status.isComplete()) {
+			try {
+				receive();
+			} catch (Exception e) {
+				return new Results(e);
+			}
+		}
+		return new Results(null);
 	}
-
+	public void receive() throws IOException {
+		synchronized (status) {
+			SourceData<DataType> incoming = in.produce();
+			int index = incoming.getIndex();
+			if(!status.hasIndex(index)) {
+				this.out.consume(index, incoming);
+				status.addIndex(index);
+			}
+		}		
+	}
 }
