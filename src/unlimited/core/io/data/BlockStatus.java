@@ -23,11 +23,10 @@ public class BlockStatus {
 		}
 		return nextClearBit;
 	}
-	public long getNext64() {
+	public long[] getLongMap() {
 		int firstEmpty = getNextEmptyEntry();
 		int bitsToCheck = Math.min(64, (blockSize-firstEmpty));
 		BitSet bitSet = this.received.get(firstEmpty, firstEmpty+bitsToCheck);
-		long[] longArray = bitSet.toLongArray();
-		return longArray.length<1?0l:longArray[0];
+		return bitSet.toLongArray();
 	}
 }

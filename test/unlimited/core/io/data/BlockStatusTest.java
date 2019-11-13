@@ -25,20 +25,20 @@ public class BlockStatusTest {
 	}
 
 	@Test
-	public void testGetNext64() {
+	public void testGetLongMap() {
 		BlockStatus underTest = new BlockStatus(10);
 		for(int i = 0 ; i < 10 ; i ++) {
-			long next64 = underTest.getNext64();
+			long[] longMap = underTest.getLongMap();
 			
 			for(int j = 0 ; j < i ; j++) {
-				assertFalse(BitWise.testBit(next64, j));
+				assertFalse(BitWise.testBit(longMap, j));
 			}
 			underTest.addIndex(i);
 		}
 		underTest = new BlockStatus(10);
 		int expectedCount = 0;
 		for(int i = 9 ; i >= 0 ; i --) {
-			long next64 = underTest.getNext64();
+			long[] next64 = underTest.getLongMap();
 			int actualCount = 0;
 			for(int j = 0 ; j < 10 ; j ++) {
 				if(BitWise.testBit(next64, j)) {
