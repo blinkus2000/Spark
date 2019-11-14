@@ -8,7 +8,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -17,8 +16,67 @@ import java.util.stream.StreamSupport;
 import unlimited.core.io.streams.InputStreamIterator;
 
 public abstract class StreamUtil {
-  
-  /**
+	public static <T1, T2> Stream<T2> collapseWithFunction(Stream<T1> in, BiFunction<T1, T2, Boolean> collectAndContinue, Function<T1,T2> collectorFactory) {
+	    Collapser_FunctionalBuilder<T1, T2> collapser = new Collapser_FunctionalBuilder<T1, T2>(in, collectAndContinue, collectorFactory);
+	    return collapser.build();
+	  }
+
+	public static class Collapser_FunctionalBuilder<T1, T2> {
+		private final Iterator<T1> in;
+	    private final BiFunction<T1, T2, Boolean> collectAndContinue;
+	    private final Function<T1, T2> collectorFactory;
+	    private final Iterator<T2> out;
+
+		public Collapser_FunctionalBuilder(Stream<T1> in, BiFunction<T1, T2, Boolean> collectAndContinue, Function<T1, T2> collectorFactory) {
+			this.in = in.iterator();
+		      this.collectAndContinue = collectAndContinue;
+		      this.collectorFactory = collectorFactory;
+		      this.out = new StreamCollapse_FunctionalConverter();
+		}
+
+		public Stream<T2> build() {
+			Iterable<T2> iterable = () -> out;
+		    return StreamSupport.stream(iterable.spliterator(), false);
+		}
+		private final class StreamCollapse_FunctionalConverter implements Iterator<T2> {
+		      T2 next = null;
+
+		      @Override
+		      public boolean hasNext() {
+		        return in.hasNext();
+		      }
+
+		      @Override
+		      public T2 next() {
+		        if (!hasNext()) {
+		          throw new NoSuchElementException("There is no next element!");
+		        }
+		        T1 nextFromIn = in.next();
+		        if (next == null) {
+		          next = collectorFactory.apply(nextFromIn);
+		        }
+		        T2 returnVal = next;
+
+		        while (nextFromIn != null) {
+		          
+				Boolean apply = collectAndContinue.apply(nextFromIn, returnVal);
+				if (!apply) {
+		            next = null;
+		            break;
+		          }else if(hasNext()) {
+		        	nextFromIn = in.next();  
+		          }else {
+		        	  nextFromIn = null;
+		          }
+		        }
+		        return returnVal;
+		      }
+
+		    }
+		  }
+
+	
+/**
    * @param in incoming stream to collapse
    * @param shouldFill test made to see if the item can be added via collect, if nothing has been collected and this returns false, the next item in the stream will be a collected item with just a single element in it
    * @param collect method to collect T1 items into T2 collections
@@ -131,7 +189,7 @@ public abstract class StreamUtil {
     Collapser_PostTestBuilder<T1, T2> collapser = new Collapser_PostTestBuilder<T1, T2>(in, collectAndContinue, collectorFactory);
     return collapser.build();
   }
-
+  
   public static class Collapser_PostTestBuilder<T1, T2> {
 
     private final Iterator<T1> in;

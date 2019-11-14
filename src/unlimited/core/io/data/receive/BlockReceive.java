@@ -52,5 +52,10 @@ public class BlockReceive<DataType,Out extends DataConsumer<SourceData<DataType>
 			return status.clone();
 		}
 	}
+
+	@Override
+	public boolean isFull() {
+		return this.getStatus().isComplete();
+	}
 	
 }

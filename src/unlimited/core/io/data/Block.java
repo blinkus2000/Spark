@@ -19,4 +19,5 @@ public abstract class Block<DataType,Out extends DataConsumer<SourceData<DataTyp
 		long indexOfData = dataIndex / dataCount;
 		return indexOfData == blockIndex;
 	}
+	public abstract boolean isFull();
 }

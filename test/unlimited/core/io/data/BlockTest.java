@@ -1,28 +1,28 @@
 package unlimited.core.io.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.BiFunction;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.base.Stopwatch;
 
 import unlimited.core.io.data.BlockMapper.BlockBuilder;
 import unlimited.core.io.data.receive.BlockReceive;
@@ -46,21 +46,27 @@ public class BlockTest {
 	private Random gen;
 	private int blockSize;
 	private long limit;
+	private final int threadLimit = 5;
+	private Semaphore threadLimiter;
+	boolean lastNeeedsTruncate;
 	@Before
 	public void setUp() throws Exception {
+		threadLimiter = new Semaphore(threadLimit);
 		expectedList = new LinkedList<>();
 		values = 0l;
 		receivedLongs = new ConcurrentHashMap<>();
 		receiveOut = new ReceiveConsumer();
 		receivers = new ConcurrentHashMap<>();
 		senders = new ConcurrentHashMap<>();
-		sendPool = Executors.newFixedThreadPool(5);
-		receivePool = Executors.newFixedThreadPool(5);
+		sendPool = Executors.newFixedThreadPool(threadLimit);
+		receivePool = Executors.newFixedThreadPool(threadLimit);
 		resultsSenders = new Vector<>();
 		resultsReceivers = new Vector<>();
 		gen = new Random();
-		blockSize = 1000 + gen.nextInt(4000);
-		limit = 1000000l;
+		blockSize = 1000 + gen.nextInt(1000);
+		limit = 10000000l;
+		lastNeeedsTruncate = limit%blockSize!=0;
+		System.out.println("Running test with "+limit+" items and a block size of "+blockSize+" lastValue will be truncated "+lastNeeedsTruncate);
 	}
 
 	@After
@@ -70,19 +76,19 @@ public class BlockTest {
 	@Test
 	public void test() {
 		
-		final Stream<LinkedList<Long>> orderedLongLists = StreamUtil.collapse(
-				Stream.generate(()->values++).peek(expectedList::add),(val,list)->{
-			list.add(val);
-			return gen.nextInt(100)>80;
-		},LinkedList::new);
+		Stream<SourceData<Long>> incomingDataStream = Stream.generate(()->values++)
+				.peek(expectedList::add)
+				.limit(limit)
+				.map(this::buildSourceData);
+		Stopwatch sw = Stopwatch.createStarted();
+		StreamUtil.collapseWithFunction(incomingDataStream, this::addSourceToSender, this::mapToSender)
+				.forEach(this::runSender);
+		//.forEach(System.out::println);
 		
-		
-		StreamUtil.expand(orderedLongLists.peek(Collections::shuffle), LinkedList::stream)
-		.limit(limit)
-		.map(this::buildSourceData)
-		.forEach(this::putData);
 		resultsSenders.forEach(future->assertNull(getException(future)));
 		resultsReceivers.forEach(future->assertNull(getException(future)));
+		long packetsPerSec = (long) (limit/(((double)sw.elapsed(TimeUnit.MILLISECONDS))/1000));
+		System.out.println("Executed at a rate of "+packetsPerSec+" items per second with a block size of "+blockSize);
 		final LinkedList<Long> resultList = getResultList();
 		assertEquals(expectedList,resultList);
 	}
@@ -98,9 +104,17 @@ public class BlockTest {
 		}
 		return returnVal;
 	}
+	boolean addSourceToSender(SourceData<Long> data, Sender sender ) {
+		sender.putData(data.getIndex(), data);
+		return !sender.isFull();
+	}
+	Sender mapToSender(SourceData<Long> data) {
+		Sender sender = new Sender(new BlockBuilder(blockSize,data.indexOfBlock), new SendConsumer());
+		senders.put(data.indexOfBlock, sender);
+		return sender;
+	}
 	Exception getException(Future<Results> task) {
 		try {
-			
 			final Exception error = task.get().error;
 			if(error!=null) {
 				error.printStackTrace();
@@ -113,24 +127,22 @@ public class BlockTest {
 	
 	SourceData<Long> buildSourceData(Long val){
 		final SourceData<Long> sourceData = new SourceData<Long>(blockSize,val,val);
-		if(val == limit-1l) {
+		if(val == limit-1l) { 
 			sourceData.truncateHere();
+			System.out.println("Truncating "+sourceData);
 		}
+		
 		return sourceData;
 	}
-	void putData(SourceData<Long> data) {
-		senders.compute(data.indexOfBlock, (blockIndex,sender)->{
-			final Sender s = runSenderIfNeeeded(blockIndex,sender);
-			s.putData(data.getIndex(), data);
-			return s;
-		});
-	}
-	Sender runSenderIfNeeeded(Long blockIndex,Sender sender) {
-		if(sender==null) {
-			sender = new Sender(new BlockBuilder(blockSize,blockIndex), new SendConsumer());
+	void runSender(Sender sender) {
+		try {
+			System.out.println("Attempting to run sender "+sender);
+			threadLimiter.acquire();
+			System.out.println("Submitting sender"+sender);
 			resultsSenders.add(sendPool.submit(sender));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		return sender;
 	}
 	public class SendConsumer implements DataConsumer<SourceData<Long>>{
 		LinkedBlockingQueue<SourceData<Long>> pipe = new LinkedBlockingQueue<>();
@@ -173,6 +185,24 @@ public class BlockTest {
 			super(builder, sendOut, new SendStatusSupplier(builder,sendOut));
 			
 		}
+
+		@Override
+		public Results call() throws Exception {
+			try {
+				System.out.println("Executing: "+this);
+				return super.call();
+			} finally {
+				System.out.println("Releasing: "+this);
+				threadLimiter.release();
+			}
+		}
+
+		@Override
+		public String toString() {
+			return "Sender [blockIndex=" + blockIndex + ", dataCount=" + dataCount + "]";
+		}
+
+		
 	}
 	public class ReceiveConsumer implements DataConsumer<SourceData<Long>>{
 		@Override

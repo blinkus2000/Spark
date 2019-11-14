@@ -1,24 +1,21 @@
 package unlimited.core.io.data.send;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import unlimited.core.io.data.BlockMapper.BlockBuilder;
 import unlimited.core.io.data.BlockMapper;
+import unlimited.core.io.data.BlockMapper.BlockBuilder;
 import unlimited.core.io.data.BlockStatus;
 import unlimited.core.io.data.DataConsumer;
 import unlimited.core.io.data.SourceData;
@@ -44,9 +41,11 @@ public class BlockSendTest {
 		BlockStatus status = new BlockStatus(1000);
 		Output out = new Output(status);
 		TestSender underTest = new TestSender(mapper.map(0), out);
+		assertFalse(underTest.isFull());
 		shuffled.forEach(data->underTest.putData(data.getIndex(), data));
 		underTest.call();
 		shuffled.stream().map(SourceData::getIndex).forEach(i->assertTrue(status.hasIndex(i)));
+		assertTrue(underTest.isFull());
 	}
 	public class Output implements DataConsumer<SourceData<Long>>{
 		final BlockStatus status;

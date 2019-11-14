@@ -19,8 +19,11 @@ public class BlockStatus implements Cloneable {
 			this.currentFull = status.currentFull;
 			this.received = (BitSet) status.received.clone();
 			this.truncate = status.truncate;
+			this.changed = status.changed;
 		}
 	}
+	
+	
 	public synchronized void addIndex(int index) {
 		received.set(index);
 		this.changed = true;
