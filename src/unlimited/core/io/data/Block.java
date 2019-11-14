@@ -15,9 +15,6 @@ public abstract class Block<DataType,Out extends DataConsumer<SourceData<DataTyp
 		this.out = out;
 	}
 
-	public boolean containsDataIndex(long dataIndex) {
-		long indexOfData = dataIndex / dataCount;
-		return indexOfData == blockIndex;
-	}
+	
 	public abstract boolean isFull();
 }

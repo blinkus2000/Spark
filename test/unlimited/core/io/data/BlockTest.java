@@ -27,6 +27,7 @@ import com.google.common.base.Stopwatch;
 import unlimited.core.io.data.BlockMapper.BlockBuilder;
 import unlimited.core.io.data.receive.BlockReceive;
 import unlimited.core.io.data.send.BlockSend;
+import unlimited.core.util.collect.BlockingSet;
 import unlimited.core.util.stream.StreamUtil;
 
 
@@ -64,7 +65,7 @@ public class BlockTest {
 		resultsReceivers = new Vector<>();
 		gen = new Random();
 		blockSize = 1000 + gen.nextInt(1000);
-		limit = 10000000l;
+		limit = 1000000l;
 		lastNeeedsTruncate = limit%blockSize!=0;
 		System.out.println("Running test with "+limit+" items and a block size of "+blockSize+" lastValue will be truncated "+lastNeeedsTruncate);
 	}
@@ -145,7 +146,7 @@ public class BlockTest {
 		}
 	}
 	public class SendConsumer implements DataConsumer<SourceData<Long>>{
-		LinkedBlockingQueue<SourceData<Long>> pipe = new LinkedBlockingQueue<>();
+		BlockingSet<SourceData<Long>> pipe = new BlockingSet<>();
 		@Override
 		public void consume(int index, SourceData<Long> data) throws IOException {
 			pipe.offer(data);

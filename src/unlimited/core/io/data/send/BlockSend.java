@@ -46,11 +46,11 @@ public class BlockSend <DataType,Out extends DataConsumer<SourceData<DataType>>>
 					allData.computeIfPresent(i, this::send);
 				}
 			}
+			sendCount++;
 			return true;
 		} finally {
-			sendCount++;
 			try {
-				Thread.sleep(1l);
+				Thread.sleep(0l);
 			} catch (InterruptedException e) {}
 		}
 	}
