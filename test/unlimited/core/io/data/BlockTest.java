@@ -49,6 +49,7 @@ public class BlockTest {
 	private final int threadLimit = 5;
 	private Semaphore threadLimiter;
 	boolean lastNeeedsTruncate;
+	double packetLoss;
 	@Before
 	public void setUp() throws Exception {
 		threadLimiter = new Semaphore(threadLimit);
@@ -65,6 +66,7 @@ public class BlockTest {
 		gen = new Random();
 		blockSize = 1000 + gen.nextInt(1000);
 		limit = 1000000l;
+		packetLoss = 0.5;
 		lastNeeedsTruncate = limit%blockSize!=0;
 		System.out.println("Running test with "+limit+" items and a block size of "+blockSize+" lastValue will be truncated "+lastNeeedsTruncate);
 	}
@@ -148,7 +150,9 @@ public class BlockTest {
 		BlockingSet<SourceData<Long>> pipe = new BlockingSet<>();
 		@Override
 		public void consume(int index, SourceData<Long> data) throws IOException {
-			pipe.offer(data);
+			if (gen.nextDouble()>packetLoss) {
+				pipe.offer(data);
+			}
 		}
 		SourceData<Long> safeGet(){
 			try {
