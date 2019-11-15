@@ -31,7 +31,6 @@ public class BlockSend <DataType,Out extends DataConsumer<SourceData<DataType>>>
 		} catch (Exception e) {
 			return new Results(e);
 		}
-		System.out.println("SEND COUNT "+sendCount+" for "+this);
 		return new Results(null);
 	}
 
@@ -41,6 +40,7 @@ public class BlockSend <DataType,Out extends DataConsumer<SourceData<DataType>>>
 			if (currentStatus.isComplete()) {
 				return false;
 			}
+			System.out.println("BLOCK ID: "+this.blockIndex+" SENDING "+currentStatus.remaining()+ " packets, current retry is "+sendCount);
 			for (int i = currentStatus.getNextEmptyEntry(); i < this.dataCount; i++) {
 				if (!currentStatus.hasIndex(i)) {
 					allData.computeIfPresent(i, this::send);

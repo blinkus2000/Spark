@@ -66,7 +66,7 @@ public class BlockTest {
 		gen = new Random();
 		blockSize = 1000 + gen.nextInt(1000);
 		limit = 1000000l;
-		packetLoss = 0.5;
+		packetLoss = 0.99;
 		lastNeeedsTruncate = limit%blockSize!=0;
 		System.out.println("Running test with "+limit+" items and a block size of "+blockSize+" lastValue will be truncated "+lastNeeedsTruncate);
 	}
@@ -131,16 +131,13 @@ public class BlockTest {
 		final SourceData<Long> sourceData = new SourceData<Long>(blockSize,val,val);
 		if(val == limit-1l) { 
 			sourceData.truncateHere();
-			System.out.println("Truncating "+sourceData);
 		}
 		
 		return sourceData;
 	}
 	void runSender(Sender sender) {
 		try {
-			System.out.println("Attempting to run sender "+sender);
 			threadLimiter.acquire();
-			System.out.println("Submitting sender"+sender);
 			resultsSenders.add(sendPool.submit(sender));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -193,10 +190,8 @@ public class BlockTest {
 		@Override
 		public Results call() throws Exception {
 			try {
-				System.out.println("Executing: "+this);
 				return super.call();
 			} finally {
-				System.out.println("Releasing: "+this);
 				threadLimiter.release();
 			}
 		}

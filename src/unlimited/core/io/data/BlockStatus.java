@@ -61,5 +61,10 @@ public class BlockStatus implements Cloneable {
 		this.truncate = truncate;
 		this.changed = true;
 	}
+	public int remaining() {
+		BitSet bitSet = this.received.get(this.received.nextClearBit(currentFull), dataCount);
+		
+		return bitSet.size()-bitSet.cardinality();
+	}
 	
 }
