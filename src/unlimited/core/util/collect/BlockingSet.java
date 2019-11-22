@@ -18,6 +18,7 @@ public class BlockingSet<T> {
 			final T next = innerSet.iterator().next();
 			innerSet.remove(next);
 			returnVal = next;
+			notifyAll();
 		}
 		return returnVal;
 	}
